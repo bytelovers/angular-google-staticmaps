@@ -1,5 +1,5 @@
 /*!
- * angular-google-staticmaps <%= pkg.version %>
+ * angular-google-staticmaps 0.0.1
  * Pascal Hartig, weluse GmbH, http://weluse.de/
  * License: MIT
  */
@@ -23,7 +23,7 @@
         });
       };
 
-      this.buildSourceString = function buildSourceString(attrs, markers) {
+      this.buildSourceString = function buildSourceString(attrs, markers, apiKey) {
         var markerStrings;
 
         if (markers) {
@@ -38,6 +38,10 @@
             return Object.keys(markerStrings).map(function (key) {
               return 'markers=' + encodeURIComponent(markerStrings[key]);
             }).join('&');
+          }
+
+          if(attr === 'key'){
+            return 'key=' + apiKey;
           }
 
           if (attr[0] !== '$' && attr !== 'alt') {
@@ -68,7 +72,9 @@
 
         link: function postLink(scope, element, attrs, ctrl) {
           var el = element[0];
-          var markers = $parse(attrs.markers)(scope);
+          var markers = $parse(attrs.markers)(scope),
+              apiKey = $parse(attrs.key)(scope);
+
 
           if (!attrs.sensor) {
             throw new Error('The `sensor` attribute is required.');
@@ -85,7 +91,7 @@
 
           el.width = parseInt(sizeBits[0], 10);
           el.height = parseInt(sizeBits[1], 10);
-          el.src = ctrl.buildSourceString(attrs, markers);
+          el.src = ctrl.buildSourceString(attrs, markers, apiKey);
         }
       };
     });
